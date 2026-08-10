@@ -1,0 +1,63 @@
+# configs/default.yaml
+project_name: "Publication-Quality Hybrid QML EV Battery Optimization"
+
+optimization:
+  variables:
+    # 1. Cell Level (Discrete & Continuous)
+    chemistry: ["NMC811", "LFP", "NCA", "NMC532", "NMC622"]
+    form_factor: ["18650", "21700", "4680", "Prismatic", "Pouch"]
+    cell_capacity_ah: [2.0, 6.0]
+    cell_voltage_v: [3.2, 4.2]
+    separator_thickness_um: [10.0, 30.0]
+    electrolyte: ["Liquid", "Solid-State", "Gel"]
+    anode_material: ["Graphite", "Silicon-Graphite", "Lithium-Metal"]
+    cathode_thickness_um: [40.0, 100.0]
+    
+    # 2. Pack Level
+    cells_series: [80, 120]
+    cells_parallel: [1, 10]
+    housing_material: ["Aluminum", "Steel", "Carbon-Fiber", "Composite"]
+    pack_layout: ["Cell-to-Pack", "Modular"]
+    tim_conductivity_w_mk: [1.0, 5.0]  # Thermal Interface Material
+    
+    # 3. Thermal Management
+    cooling_method: ["Air", "Liquid", "Immersion", "Phase-Change"]
+    coolant_type: ["Water-Glycol", "Dielectric-Fluid", "Air"]
+    cooling_channels: [2, 10]
+    flow_rate_lpm: [0.5, 5.0]
+    
+    # 4. BMS & Operation
+    fast_charge_protocol: ["Step-Charge", "CCCV", "Pulse"]
+    max_charge_c_rate: [1.0, 5.0]
+    target_soc_window: [0.1, 0.9] # 10% to 90%
+    thermal_runaway_mitigation: ["Active", "Passive", "None"]
+
+  objectives:
+    minimize:
+      - weight_kg
+      - cost_usd
+      - max_temperature_c
+      - manufacturing_complexity
+      - carbon_footprint_kg_co2
+      - charging_time_10_80_min
+    maximize:
+      - capacity_kwh
+      - cycle_life_to_80_soh
+      - energy_density_wh_l
+      - safety_margin
+      - range_km
+      - power_density_w_kg
+
+quantum:
+  qml:
+    feature_map: "ZZFeatureMap" # Options: ZZFeatureMap, PauliFeatureMap, DataReuploading
+    ansatz: "RealAmplitudes"
+    reps: 2
+    entanglement: "linear"
+  qaoa:
+    mixer: "X" # Options: X, XY (for constraints)
+    reps: 2
+    warm_start: true
+  hardware:
+    simulator: "aer_simulator"
+    noise_model: null # Set to 'ibm_brisbane' for NISQ analysis
