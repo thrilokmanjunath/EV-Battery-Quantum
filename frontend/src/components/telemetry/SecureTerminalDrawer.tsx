@@ -13,6 +13,7 @@ export default function SecureTerminalDrawer() {
   useEffect(() => {
     if (!terminalRef.current || isInitialized.current) return;
     isInitialized.current = true;
+    terminalRef.current.innerHTML = '';
 
     const term = new Terminal({
       theme: {
@@ -25,28 +26,35 @@ export default function SecureTerminalDrawer() {
       rows: 12,
     });
 
-    term.open(terminalRef.current);
-    term.writeln('Initializing Secure Quantum Telemetry...');
+    let eventSource: EventSource | null = null;
 
-    const eventSource = new EventSource('http://localhost:8001/api/quantum/stream/demo-task');
+    const timer = setTimeout(() => {
+      if (!terminalRef.current) return;
+      
+      term.open(terminalRef.current);
+      term.writeln('Initializing Secure Quantum Telemetry...');
 
-    eventSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        term.writeln(`[${new Date().toISOString()}] ${data.message || data}`);
-      } catch {
-        term.writeln(`[${new Date().toISOString()}] ${event.data}`);
-      }
-    };
+      eventSource = new EventSource('http://localhost:8001/api/quantum/stream/demo-task');
 
-    eventSource.onerror = () => {
-      term.writeln('\x1b[31m[ERROR] Connection lost to quantum stream.\x1b[0m');
-      eventSource.close();
-    };
+      eventSource.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          term.writeln(`\r\n[${new Date().toISOString()}] ${data.message || data}`);
+        } catch {
+          term.writeln(`\r\n[${new Date().toISOString()}] ${event.data}`);
+        }
+      };
+
+      eventSource.onerror = () => {
+        term.writeln('\r\n\x1b[31m[ERROR] Connection lost to quantum stream.\x1b[0m');
+        if (eventSource) eventSource.close();
+      };
+    }, 50);
 
     return () => {
+      clearTimeout(timer);
       term.dispose();
-      eventSource.close();
+      if (eventSource) eventSource.close();
       isInitialized.current = false;
     };
   }, []);
