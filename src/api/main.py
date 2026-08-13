@@ -5,6 +5,7 @@ from prometheus_client import make_asgi_app
 
 from .routes import router
 from .websockets import ws_router
+from .endpoints import router as sse_router
 # Import metrics to ensure they are registered
 from . import metrics
 
@@ -25,6 +26,7 @@ app.add_middleware(
 # Register routes
 app.include_router(router)
 app.include_router(ws_router)
+app.include_router(sse_router)
 
 # Add prometheus metrics endpoint
 metrics_app = make_asgi_app()

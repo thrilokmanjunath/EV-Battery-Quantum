@@ -1,10 +1,10 @@
 import logging
-from src.worker.celery_app import celery_app
+from celery import shared_task
 from src.optimization.qaoa_solver import formulate_qubo, WarmStartQAOASolver
 
 logger = logging.getLogger(__name__)
 
-@celery_app.task(bind=True)
+@shared_task(bind=True)
 def run_optimization_task(self, params: dict) -> dict:
     """
     Celery task to execute QAOA-based optimization.

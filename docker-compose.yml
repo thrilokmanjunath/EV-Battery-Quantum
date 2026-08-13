@@ -3,20 +3,23 @@ version: '3.8'
 services:
   api:
     build: .
+    entrypoint: uvicorn src.api.main:app --host 0.0.0.0 --port 8000
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=${REDIS_URL}
       - CELERY_BROKER_URL=${CELERY_BROKER_URL}
       - CELERY_RESULT_BACKEND=${CELERY_RESULT_BACKEND}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
     depends_on:
       - db
       - redis
 
   celery_worker:
     build: .
-    command: celery -A src.worker.celery_app worker --loglevel=info
+    entrypoint: celery -A src.worker.celery_app worker --loglevel=info
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - REDIS_URL=${REDIS_URL}
@@ -27,13 +30,17 @@ services:
       - redis
 
   frontend:
-    image: node:alpine
+    image: node:20-bullseye
     ports:
       - "3000:3000"
     working_dir: /app
     volumes:
       - ./frontend:/app
-    command: npm start
+      - /app/node_modules
+    environment:
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+    command: sh -c "npm install --legacy-peer-deps && npm run dev"
 
   db:
     image: postgres:15
@@ -42,7 +49,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   redis:
     image: redis:alpine

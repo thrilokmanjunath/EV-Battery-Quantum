@@ -7,7 +7,8 @@ result_backend = os.getenv('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
 celery_app = Celery(
     'optimization_worker',
     broker=broker_url,
-    backend=result_backend
+    backend=result_backend,
+    include=['src.services.optimization_service']
 )
 
 celery_app.conf.update(

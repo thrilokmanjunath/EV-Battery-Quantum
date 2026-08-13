@@ -7,7 +7,8 @@ A production-oriented distributed quantum computing application that leverages h
 - **Quantum Kernel Machine Learning**: Utilizes Quantum Kernel Support Vector Machines (QKSVM) for predictive performance modeling.
 - **Asynchronous Task Processing**: Celery distributed workers handle computationally intensive quantum simulations.
 - **Caching**: Sub-50ms deterministic Redis caching deduplicates expensive repeated quantum simulations.
-- **Real-Time Updates**: WebSocket connections stream live execution status and optimization trajectories to the dashboard.
+- **Secure Telemetry Streaming**: Server-Sent Events (SSE) provide real-time quantum convergence metrics directly to the browser.
+- **Log Sanitization Middleware**: Automatically redacts sensitive proprietary chemistry ratios, API keys, and Quantum statevectors before streaming to the client.
 - **Authentication**: JWT-based Role-Based Access Control (RBAC) securely protects execution endpoints.
 - **Observability**: Built-in Prometheus metrics and Grafana dashboards for latency and throughput tracking.
 - **Docker Deployment**: Clean, microservice-oriented topology connecting 7 isolated containers.
@@ -30,8 +31,8 @@ flowchart LR
 
     WORKER --> REDIS_RESULT[Redis Result Backend]
 
-    REDIS_RESULT --> WS[WebSocket Updates]
-    WS --> UI
+    REDIS_RESULT --> SSE[Server-Sent Events]
+    SSE --> UI
 
     API --> PROM[Prometheus]
     PROM --> GRAFANA[Grafana]
@@ -41,8 +42,8 @@ flowchart LR
 
 | Layer | Technologies |
 | --- | --- |
-| **Frontend** | React, TypeScript, Vite, TailwindCSS (if applicable) |
-| **Backend API** | FastAPI, Pydantic, WebSockets |
+| **Frontend** | Next.js 14 (App Router), React, TailwindCSS, Framer Motion, XTerm.js |
+| **Backend API** | FastAPI, Pydantic, Server-Sent Events (SSE) |
 | **Quantum Engine** | Qiskit (1.2+), Qiskit-Aer, Qiskit-Optimization |
 | **Task Queue** | Celery |
 | **Datastore / Cache** | Redis, PostgreSQL, SQLAlchemy |
@@ -57,8 +58,8 @@ flowchart LR
 5. **Celery Dispatch**: Background worker unqueues the parameter payload.
 6. **Quantum Execution**: The backend invokes Qiskit `StatevectorSampler` primitives for QAOA/QKSVM logic.
 7. **Result Storage**: Optimizations are tracked persistently in the SQL database and temporarily in Redis.
-8. **Real-Time Status Update**: The Celery worker updates `AsyncResult.state`, polled by the API WebSocket.
-9. **Frontend Visualization**: The React interface plots the multi-objective loss topology.
+8. **Real-Time Status Update**: The Celery worker updates `AsyncResult.state`, streamed securely via SSE.
+9. **Frontend Visualization**: The Next.js interface presents an interactive Battery Blueprint and plots the multi-objective loss topology.
 
 ## Project Structure
 ```
@@ -100,8 +101,8 @@ uv pip install -r requirements.txt
 ### Frontend Installation (Local)
 ```bash
 cd frontend
-npm install
-npm run build
+npm install --legacy-peer-deps
+npm run dev
 ```
 
 ## Running Locally

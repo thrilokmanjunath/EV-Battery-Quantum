@@ -5,6 +5,7 @@ from typing import Dict, Any
 from ..services.cache_service import cache_response
 from ..services.optimization_service import run_optimization_task
 from .metrics import optimization_requests_total, optimization_processing_seconds
+from src.worker.celery_app import celery_app
 import time
 
 router = APIRouter()
@@ -18,7 +19,7 @@ def health_check():
 
 @router.post("/optimize")
 @cache_response(ttl=60)
-def start_optimization(request: OptimizationRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
+def start_optimization(request: OptimizationRequest, background_tasks: BackgroundTasks):
     start_time = time.time()
     optimization_requests_total.inc()
     task = run_optimization_task.delay(request.parameters)
@@ -26,8 +27,11 @@ def start_optimization(request: OptimizationRequest, background_tasks: Backgroun
     optimization_processing_seconds.observe(process_time)
     return {"message": "Optimization started", "task_id": task.id}
 
-@router.get("/status/{run_id}")
-@cache_response(ttl=60)
-async def get_status(run_id: int):
-    # This endpoint will check the status of the optimization run from the DB
-    return {"run_id": run_id, "status": "unknown"}
+@router.get("/status/{task_id}")
+async def get_status(task_id: str):
+    task_result = celery_app.AsyncResult(task_id)
+    return {
+        "task_id": task_id,
+        "status": task_result.status,
+        "result": task_result.result if task_result.ready() else None
+    }
