@@ -16,13 +16,13 @@ def test_health():
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
-@patch("src.api.routes.run_optimization_task.delay")
-def test_optimize(mock_delay):
+@patch("src.api.routes.run_optimization_task")
+def test_optimize(mock_task):
     class MockTask:
         id = "12345"
-    mock_delay.return_value = MockTask()
+    mock_task.delay.return_value = MockTask()
     
     response = client.post("/optimize", json={"parameters": {"dummy": "data"}})
     assert response.status_code == 200
     assert response.json() == {"message": "Optimization started", "task_id": "12345"}
-    mock_delay.assert_called_once_with({"dummy": "data"})
+    mock_task.delay.assert_called_once_with({"dummy": "data"})

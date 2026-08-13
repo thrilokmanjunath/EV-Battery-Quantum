@@ -13,7 +13,7 @@ router = APIRouter()
 
 async def get_user_from_query(token: str = Query(None)):
     if not token:
-        return {"username": "demo_user"}
+        raise HTTPException(status_code=401, detail="Invalid token")
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")

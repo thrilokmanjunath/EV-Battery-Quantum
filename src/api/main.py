@@ -13,7 +13,7 @@ app = FastAPI(title="EV Battery Quantum Optimization API")
 
 # Configure CORS
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "")
-origins = allowed_origins_env.split(",") if allowed_origins_env else []
+origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip() and origin.strip() != "*"]
 
 app.add_middleware(
     CORSMiddleware,
