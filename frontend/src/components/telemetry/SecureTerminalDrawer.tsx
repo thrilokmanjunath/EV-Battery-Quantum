@@ -8,9 +8,11 @@ import { motion } from "framer-motion";
 
 export default function SecureTerminalDrawer() {
   const terminalRef = useRef<HTMLDivElement>(null);
+  const isInitialized = useRef(false);
 
   useEffect(() => {
-    if (!terminalRef.current) return;
+    if (!terminalRef.current || isInitialized.current) return;
+    isInitialized.current = true;
 
     const term = new Terminal({
       theme: {
@@ -45,6 +47,7 @@ export default function SecureTerminalDrawer() {
     return () => {
       term.dispose();
       eventSource.close();
+      isInitialized.current = false;
     };
   }, []);
 

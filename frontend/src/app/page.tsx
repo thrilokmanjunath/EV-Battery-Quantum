@@ -1,7 +1,11 @@
+import dynamic from "next/dynamic";
 import BatteryBlueprintCard from "@/components/blueprint/BatteryBlueprintCard";
-import SecureTerminalDrawer from "@/components/telemetry/SecureTerminalDrawer";
 import LossLandscape from "@/components/visualizer/LossLandscape";
 
+const SecureTerminalDrawer = dynamic(
+  () => import("@/components/telemetry/SecureTerminalDrawer"),
+  { ssr: false }
+);
 export default function Home() {
   return (
     <main className="min-h-screen p-8 md:p-12 lg:p-24 relative overflow-hidden">
