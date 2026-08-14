@@ -3,7 +3,21 @@
 import { motion } from "framer-motion";
 import { Zap, ShieldCheck, BatteryCharging } from "lucide-react";
 
-export default function BatteryBlueprintCard() {
+interface BlueprintResult {
+  anode: string;
+  cathode: string;
+  electrolyte: string;
+}
+
+interface BatteryBlueprintCardProps {
+  result?: BlueprintResult | null;
+}
+
+export default function BatteryBlueprintCard({ result }: BatteryBlueprintCardProps) {
+  const anode = result?.anode || "Pending...";
+  const cathode = result?.cathode || "Pending...";
+  const electrolyte = result?.electrolyte || "Pending...";
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -20,15 +34,15 @@ export default function BatteryBlueprintCard() {
         <div className="space-y-4">
           <div className="flex justify-between items-center border-b border-zinc-100 pb-2">
             <span className="text-zinc-500">Anode Material</span>
-            <span className="font-mono text-zinc-900">Silicon-Dominant (Si)</span>
+            <span className="font-mono text-zinc-900">{anode}</span>
           </div>
           <div className="flex justify-between items-center border-b border-zinc-100 pb-2">
             <span className="text-zinc-500">Cathode Material</span>
-            <span className="font-mono text-zinc-900">Li-Rich NMC 811</span>
+            <span className="font-mono text-zinc-900">{cathode}</span>
           </div>
           <div className="flex justify-between items-center border-b border-zinc-100 pb-2">
             <span className="text-zinc-500">Solid Electrolyte</span>
-            <span className="font-mono text-zinc-900">LLZO</span>
+            <span className="font-mono text-zinc-900">{electrolyte}</span>
           </div>
         </div>
 

@@ -3,7 +3,11 @@
 import { motion } from "framer-motion";
 import { Activity } from "lucide-react";
 
-export default function LossLandscape() {
+interface LossLandscapeProps {
+  running?: boolean;
+}
+
+export default function LossLandscape({ running = false }: LossLandscapeProps) {
   return (
     <motion.div 
       initial={{ opacity: 0, scale: 0.95 }}
@@ -35,15 +39,13 @@ export default function LossLandscape() {
                 key={i}
                 initial={{ height: 0 }}
                 animate={{ 
-                  height: [
-                    `${finalHeight + Math.random() * 30}%`, 
-                    `${finalHeight}%`,
-                    `${finalHeight + Math.random() * 10}%`
-                  ] 
+                  height: running 
+                    ? [`${finalHeight + Math.random() * 30}%`, `${finalHeight}%`, `${finalHeight + Math.random() * 10}%`]
+                    : `${finalHeight}%`
                 }}
                 transition={{
                   duration: 3,
-                  repeat: Infinity,
+                  repeat: running ? Infinity : 0,
                   repeatType: "reverse",
                   delay: i * 0.1
                 }}

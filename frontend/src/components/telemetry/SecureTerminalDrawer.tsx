@@ -6,12 +6,17 @@ import "xterm/css/xterm.css";
 import { Terminal as TerminalIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function SecureTerminalDrawer() {
+interface SecureTerminalDrawerProps {
+  taskId: string | null;
+  onComplete?: () => void;
+}
+
+export default function SecureTerminalDrawer({ taskId, onComplete }: SecureTerminalDrawerProps) {
   const terminalRef = useRef<HTMLDivElement>(null);
   const isInitialized = useRef(false);
 
   useEffect(() => {
-    if (!terminalRef.current || isInitialized.current) return;
+    if (!taskId || !terminalRef.current || isInitialized.current) return;
     isInitialized.current = true;
     terminalRef.current.innerHTML = '';
 
@@ -40,12 +45,17 @@ export default function SecureTerminalDrawer() {
         .then(res => res.json())
         .then(data => {
           const token = data.access_token;
-          eventSource = new EventSource(`http://localhost:8001/api/quantum/stream/demo-task?token=${token}`);
+          eventSource = new EventSource(`http://localhost:8001/api/quantum/stream/${taskId}?token=${token}`);
 
           eventSource.onmessage = (event) => {
             try {
               const parsed = JSON.parse(event.data);
               term.writeln(`\r\n[${new Date().toISOString()}] ${parsed.message || parsed}`);
+              
+              if (parsed.level === "SUCCESS" || parsed.level === "ERROR") {
+                if (eventSource) eventSource.close();
+                if (onComplete) onComplete();
+              }
             } catch {
               term.writeln(`\r\n[${new Date().toISOString()}] ${event.data}`);
             }

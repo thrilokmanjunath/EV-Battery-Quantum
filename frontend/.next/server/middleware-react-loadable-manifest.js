@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{}"
+self.__REACT_LOADABLE_MANIFEST="{\"app/page.tsx -> @/components/telemetry/SecureTerminalDrawer\":{\"id\":\"app/page.tsx -> @/components/telemetry/SecureTerminalDrawer\",\"files\":[\"static/css/_app-pages-browser_src_components_telemetry_SecureTerminalDrawer_tsx.css\",\"static/chunks/_app-pages-browser_src_components_telemetry_SecureTerminalDrawer_tsx.js\"]}}"
