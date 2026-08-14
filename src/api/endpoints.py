@@ -21,14 +21,14 @@ async def get_user_from_query(token: str = Query(...)):
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-@router.get("/demo/token")
+@router.get("/api/demo/token")
 async def get_demo_token():
     """Generates a demo token so the dashboard can connect without a full login."""
     from .auth import create_access_token
     token = create_access_token({"sub": "demo_user"})
     return {"access_token": token}
 
-@router.get("/quantum/stream/{task_id}")
+@router.get("/api/quantum/stream/{task_id}")
 async def stream_telemetry(task_id: str, request: Request, user: dict = Depends(get_user_from_query)):
     """
     Secure Server-Sent Events (SSE) endpoint to stream sanitized telemetry.
