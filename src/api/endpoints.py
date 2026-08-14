@@ -11,9 +11,7 @@ from jose import jwt, JWTError, ExpiredSignatureError
 
 router = APIRouter()
 
-async def get_user_from_query(token: str = Query(None)):
-    if not token:
-        raise HTTPException(status_code=401, detail="Invalid token")
+async def get_user_from_query(token: str = Query(...)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")
@@ -23,9 +21,15 @@ async def get_user_from_query(token: str = Query(None)):
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
+@router.get("/demo/token")
+async def get_demo_token():
+    """Generates a demo token so the dashboard can connect without a full login."""
+    from .auth import create_access_token
+    token = create_access_token({"sub": "demo_user"})
+    return {"access_token": token}
 
-@router.get("/api/quantum/stream/{task_id}")
-async def stream_telemetry(task_id: str, user: dict = Depends(get_user_from_query)):
+@router.get("/quantum/stream/{task_id}")
+async def stream_telemetry(task_id: str, request: Request, user: dict = Depends(get_user_from_query)):
     """
     Secure Server-Sent Events (SSE) endpoint to stream sanitized telemetry.
     Requires a valid JWT token in the query string.

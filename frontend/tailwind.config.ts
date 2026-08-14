@@ -9,14 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0B0F19",
-        foreground: "#E2E8F0",
-        primary: "#3B82F6",
-        quantum: {
-          dark: "#0B0F19",
-          glow: "#38bdf8",
-          accent: "#818cf8"
-        }
+        background: "#ffffff",
+        foreground: "#09090b",
+        primary: "#18181b",
       },
     },
   },

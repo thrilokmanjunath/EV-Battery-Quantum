@@ -17,9 +17,10 @@ export default function SecureTerminalDrawer() {
 
     const term = new Terminal({
       theme: {
-        background: '#0B0F19',
-        foreground: '#38bdf8',
-        cursor: '#818cf8',
+        background: '#ffffff',
+        foreground: '#171717',
+        cursor: '#3b82f6',
+        selectionBackground: '#e2e8f0',
       },
       fontFamily: '"Fira Code", monospace',
       fontSize: 14,
@@ -34,21 +35,31 @@ export default function SecureTerminalDrawer() {
       term.open(terminalRef.current);
       term.writeln('Initializing Secure Quantum Telemetry...');
 
-      eventSource = new EventSource('http://localhost:8001/api/quantum/stream/demo-task');
+      // Fetch the demo token to satisfy the backend's strict JWT requirement
+      fetch('http://localhost:8001/api/demo/token')
+        .then(res => res.json())
+        .then(data => {
+          const token = data.access_token;
+          eventSource = new EventSource(`http://localhost:8001/api/quantum/stream/demo-task?token=${token}`);
 
-      eventSource.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          term.writeln(`\r\n[${new Date().toISOString()}] ${data.message || data}`);
-        } catch {
-          term.writeln(`\r\n[${new Date().toISOString()}] ${event.data}`);
-        }
-      };
+          eventSource.onmessage = (event) => {
+            try {
+              const parsed = JSON.parse(event.data);
+              term.writeln(`\r\n[${new Date().toISOString()}] ${parsed.message || parsed}`);
+            } catch {
+              term.writeln(`\r\n[${new Date().toISOString()}] ${event.data}`);
+            }
+          };
 
-      eventSource.onerror = () => {
-        term.writeln('\r\n\x1b[31m[ERROR] Connection lost to quantum stream.\x1b[0m');
-        if (eventSource) eventSource.close();
-      };
+          eventSource.onerror = () => {
+            term.writeln('\r\n\x1b[31m[ERROR] Connection lost to quantum stream.\x1b[0m');
+            if (eventSource) eventSource.close();
+          };
+        })
+        .catch(err => {
+          term.writeln('\r\n\x1b[31m[ERROR] Failed to fetch auth token.\x1b[0m');
+        });
+
     }, 50);
 
     return () => {
@@ -64,16 +75,14 @@ export default function SecureTerminalDrawer() {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.8, delay: 0.2 }}
-      className="p-[1px] rounded-2xl bg-gradient-to-br from-quantum-accent/50 to-transparent"
+      className="rounded-2xl border border-zinc-200 bg-white shadow-sm overflow-hidden flex flex-col"
     >
-      <div className="bg-[#0f172a] rounded-2xl overflow-hidden h-full">
-        <div className="bg-black/50 px-4 py-3 flex items-center gap-2 border-b border-white/10">
-          <TerminalIcon size={16} className="text-quantum-accent" />
-          <span className="text-sm font-medium text-gray-300">Live Telemetry (xterm.js)</span>
-        </div>
-        <div className="p-4 bg-[#0B0F19]">
-          <div ref={terminalRef} className="w-full h-full" />
-        </div>
+      <div className="bg-zinc-50 px-4 py-3 flex items-center gap-2 border-b border-zinc-200">
+        <TerminalIcon size={16} className="text-zinc-500" />
+        <span className="text-sm font-medium text-zinc-700">Live Telemetry</span>
+      </div>
+      <div className="p-4 flex-1">
+        <div ref={terminalRef} className="w-full h-full" />
       </div>
     </motion.div>
   );
