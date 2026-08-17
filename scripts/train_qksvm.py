@@ -50,10 +50,10 @@ def train_model():
     print(f"Training accuracy: {score * 100:.2f}%")
     
     # Extract the underlying support vector coefficients (alpha * y)
-    # This will be used by the QUBO solver!
-    # In sklearn, dual_coef_ is the array of alpha_i * y_i
     dual_coef = model.svc.dual_coef_[0]
-    support_vectors = model.svc.support_vectors_
+    # For custom kernel SVC, support_vectors_ is empty, so we must extract them using the indices
+    support_indices = model.svc.support_
+    support_vectors = X[support_indices]
     intercept = model.svc.intercept_[0]
     
     print("Saving model weights for QAOA QUBO construction...")

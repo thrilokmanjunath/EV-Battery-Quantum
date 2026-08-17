@@ -5,5 +5,11 @@
       "static/css/_app-pages-browser_src_components_telemetry_SecureTerminalDrawer_tsx.css",
       "static/chunks/_app-pages-browser_src_components_telemetry_SecureTerminalDrawer_tsx.js"
     ]
+  },
+  "components/telemetry/SecureTerminalDrawer.tsx -> xterm": {
+    "id": "components/telemetry/SecureTerminalDrawer.tsx -> xterm",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_xterm_lib_xterm_js.js"
+    ]
   }
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Terminal } from "xterm";
 import "xterm/css/xterm.css";
 import { Terminal as TerminalIcon } from "lucide-react";
 import { motion } from "framer-motion";
@@ -17,10 +16,13 @@ export default function SecureTerminalDrawer({ taskId, onComplete }: SecureTermi
 
   useEffect(() => {
     if (!taskId || !terminalRef.current || isInitialized.current) return;
-    isInitialized.current = true;
-    terminalRef.current.innerHTML = '';
+    
+    // Dynamically import xterm to avoid Next.js SSR 'self is not defined' errors
+    import("xterm").then(({ Terminal }) => {
+      isInitialized.current = true;
+      if (terminalRef.current) terminalRef.current.innerHTML = '';
 
-    const term = new Terminal({
+      const term = new Terminal({
       theme: {
         background: '#ffffff',
         foreground: '#171717',
@@ -78,7 +80,9 @@ export default function SecureTerminalDrawer({ taskId, onComplete }: SecureTermi
       if (eventSource) eventSource.close();
       isInitialized.current = false;
     };
-  }, []);
+    });
+
+  }, [taskId, onComplete]);
 
   return (
     <motion.div 
