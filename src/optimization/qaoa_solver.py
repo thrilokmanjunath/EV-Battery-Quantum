@@ -37,10 +37,41 @@ def formulate_qubo(config: Dict[str, Any]) -> QuadraticProgram:
         var_names = [f"{var_name}_{opt}".replace("-", "_") for opt in options]
         qp.linear_constraint(linear={v: 1 for v in var_names}, sense='==', rhs=1, name=f"one_hot_{var_name}")
         
-    # Mock objective: minimize a random quadratic/linear cost based on variable correlations
-    # In a real scenario, this would come from a surrogate model or empirical data
-    np.random.seed(42)
-    linear_obj = {v.name: np.random.uniform(-1, 1) for v in qp.variables}
+    # Load QKSVM weights to form the objective
+    import os
+    import pickle
+    
+    weights_path = "models/qksvm_weights.pkl"
+    if os.path.exists(weights_path):
+        with open(weights_path, "rb") as f:
+            qksvm_data = pickle.load(f)
+            
+        dual_coef = qksvm_data["dual_coef"]
+        support_vectors = qksvm_data["support_vectors"]
+        feature_names = qksvm_data["feature_names"]
+        
+        # Approximate linear weights: w_j = sum(alpha_i * y_i * SV_{i,j})
+        w = np.zeros(len(feature_names))
+        for i in range(len(dual_coef)):
+            w += dual_coef[i] * support_vectors[i]
+            
+        # We want to maximize the decision function, so we MINIMIZE the negative weights
+        # Also map feature_names to qp.variables
+        linear_obj = {}
+        for var in qp.variables:
+            # Find index in feature_names
+            try:
+                idx = feature_names.index(var.name)
+                linear_obj[var.name] = -float(w[idx])
+            except ValueError:
+                linear_obj[var.name] = 0.0
+                
+        print("Successfully loaded QKSVM weights into QUBO formulation.")
+    else:
+        print("Warning: QKSVM weights not found. Falling back to random objective.")
+        np.random.seed(42)
+        linear_obj = {v.name: np.random.uniform(-1, 1) for v in qp.variables}
+        
     qp.minimize(linear=linear_obj)
     
     return qp
