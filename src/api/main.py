@@ -27,6 +27,10 @@ app.add_middleware(
 app.include_router(router)
 app.include_router(ws_router)
 app.include_router(sse_router)
+from .chemistries import router as chemistries_router
+from .calculations import router as calculations_router
+app.include_router(chemistries_router)
+app.include_router(calculations_router)
 
 # Add prometheus metrics endpoint
 metrics_app = make_asgi_app()

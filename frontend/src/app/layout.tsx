@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: "Quantum Optimization Dashboard",
 };
 
+import Navbar from "@/components/layout/Navbar";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -13,7 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`min-h-screen bg-quantum-dark text-white`}>{children}</body>
+      <body className={`min-h-screen bg-zinc-50 text-zinc-900`}>
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }

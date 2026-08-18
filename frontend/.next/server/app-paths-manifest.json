@@ -1,3 +1,9 @@
 {
-  "/page": "app/page.js"
+  "/reactions/page": "app/reactions/page.js",
+  "/elements/page": "app/elements/page.js",
+  "/calculator/page": "app/calculator/page.js",
+  "/degradation/page": "app/degradation/page.js",
+  "/page": "app/page.js",
+  "/chemistries/page": "app/chemistries/page.js",
+  "/compare/page": "app/compare/page.js"
 }
