@@ -11,7 +11,7 @@ export default function NotFound() {
         404 - Metric Not Found
       </h2>
       <p className="text-zinc-500 max-w-md mb-8">
-        We couldn't find the battery chemistry or specific metric you were looking for. It might have been moved or removed.
+        We couldn&apos;t find the battery chemistry or specific metric you were looking for. It might have been moved or removed.
       </p>
       <Link 
         href="/" 
