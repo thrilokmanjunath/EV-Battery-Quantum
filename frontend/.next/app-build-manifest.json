@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/page": [
+    "/elements/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/elements/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -16,30 +16,50 @@
       "static/chunks/main-app.js",
       "static/chunks/app/chemistries/page.js"
     ],
-    "/compare/page": [
+    "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/compare/page.js"
+      "static/chunks/app/page.js"
+    ],
+    "/calculator/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/calculator/page.js"
     ],
     "/reactions/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/reactions/page.js"
     ],
+    "/compare/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/compare/page.js"
+    ],
     "/degradation/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/degradation/page.js"
     ],
-    "/elements/page": [
+    "/loading": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/elements/page.js"
+      "static/chunks/app/loading.js"
     ],
-    "/calculator/page": [
+    "/not-found": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/calculator/page.js"
+      "static/chunks/app/not-found.js"
+    ],
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
+    ],
+    "/error": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/error.js"
     ]
   }
 }
